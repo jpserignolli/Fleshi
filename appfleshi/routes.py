@@ -6,5 +6,6 @@ def homepage():
     return render_template('homepage.html')
 
 @app.route('/profile/<username>')
+@login_required
 def profile(username):
     return render_template('perfil.html', username=username)
