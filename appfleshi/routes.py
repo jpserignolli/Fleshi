@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import Flask, render_template, request
 from flask_login import login_required
 from appfleshi import app
 from appfleshi.forms import LoginForm, RegisterForm
