@@ -32,7 +32,7 @@ export-env {
       }
     }
 
-    let virtual_env = r#'C:\Users\Aluno\Desktop\Fleshi\.venv'#
+    let virtual_env = r#'D:\João Serignolli\Fls\Fleshi\.venv'#
     let bin = r#'Scripts'#
 
     let is_windows = ($nu.os-info.family) == 'windows'
