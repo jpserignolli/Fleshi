@@ -10,15 +10,43 @@
     {{ form.email.label() }}
     {{ form.email() }}
 
+    {% if form.email.errors %}
+        {% for erro in form.email.errors %}
+            <p class="alert alert-danger" role="alert">{{ erro }}</p>
+        {% endfor%}
+    {% endif %}
+
+
+
     {{ form.username.label() }}
     {{ form.username() }}
+
+    {% if form.username.errors %}
+        {% for erro in form.username.errors %}
+            <p class="alert alert-danger" role="alert">{{ erro }}</p>
+        {% endfor%}
+    {% endif %}
 
     {{ form.password.label() }}
     {{ form.password() }}
 
+    {% if form.password.errors %}
+        {% for erro in form.password.errors %}
+            <p class="alert alert-danger" role="alert">{{ erro }}</p>
+        {% endfor%}
+    {% endif %}
+
     {{ form.confirm_password.label() }}
     {{ form.confirm_password() }}
 
+        {% if form.confirm_password.errors %}
+        {% for erro in form.confirm_password.errors %}
+            <p class="alert alert-danger" role="alert">{{ erro }}</p>
+        {% endfor%}
+
+    {% endif %}
+
     {{ form.submit() }}
 </form>
+<a href="{{ url_for('homepage') }}">Tem uma conta? Faça login.</a>
 {% endblock %}
