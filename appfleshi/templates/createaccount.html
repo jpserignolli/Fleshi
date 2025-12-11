@@ -5,48 +5,67 @@
 {% endblock %}
 
 {% block form %}
-<form method="post">
-    {{ form.csrf_token }}
-    {{ form.email.label() }}
-    {{ form.email() }}
 
-    {% if form.email.errors %}
-        {% for erro in form.email.errors %}
-            <p class="alert alert-danger" role="alert">{{ erro }}</p>
-        {% endfor%}
-    {% endif %}
+<div class="card">
+    <form method="post">
+        {{ form.csrf_token }}
 
 
+        <div class="mb-3">
+            {{ form.email.label(class_="form-label") }}
+            {{ form.email(class_="form-control") }}
 
-    {{ form.username.label() }}
-    {{ form.username() }}
+            {% if form.email.errors %}
+                {% for erro in form.email.errors %}
+                    <div class="alert alert-danger p-2 mt-2">{{ erro }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-    {% if form.username.errors %}
-        {% for erro in form.username.errors %}
-            <p class="alert alert-danger" role="alert">{{ erro }}</p>
-        {% endfor%}
-    {% endif %}
 
-    {{ form.password.label() }}
-    {{ form.password() }}
+        <div class="mb-3">
+            {{ form.username.label(class_="form-label") }}
+            {{ form.username(class_="form-control") }}
 
-    {% if form.password.errors %}
-        {% for erro in form.password.errors %}
-            <p class="alert alert-danger" role="alert">{{ erro }}</p>
-        {% endfor%}
-    {% endif %}
+            {% if form.username.errors %}
+                {% for erro in form.username.errors %}
+                    <div class="alert alert-danger p-2 mt-2">{{ erro }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-    {{ form.confirm_password.label() }}
-    {{ form.confirm_password() }}
 
-        {% if form.confirm_password.errors %}
-        {% for erro in form.confirm_password.errors %}
-            <p class="alert alert-danger" role="alert">{{ erro }}</p>
-        {% endfor%}
+        <div class="mb-3">
+            {{ form.password.label(class_="form-label") }}
+            {{ form.password(class_="form-control") }}
 
-    {% endif %}
+            {% if form.password.errors %}
+                {% for erro in form.password.errors %}
+                    <div class="alert alert-danger p-2 mt-2">{{ erro }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-    {{ form.submit() }}
-</form>
-<a href="{{ url_for('homepage') }}">Tem uma conta? Faça login.</a>
+
+        <div class="mb-3">
+            {{ form.confirm_password.label(class_="form-label") }}
+            {{ form.confirm_password(class_="form-control") }}
+
+            {% if form.confirm_password.errors %}
+                {% for erro in form.confirm_password.errors %}
+                    <div class="alert alert-danger p-2 mt-2">{{ erro }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="d-grid">
+            {{ form.submit(class_="btn btn-dark btn-lg") }}
+        </div>
+    </form>
+
+    <div class="text-center mt-3">
+        <a href="{{ url_for('homepage') }}">Tem uma conta? Faça login.</a>
+    </div>
+</div>
+
 {% endblock %}

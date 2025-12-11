@@ -1,0 +1,21 @@
+{% extends "homepage.html" %}
+
+{% block title %}Notificações{% endblock %}
+
+{% block body %}
+{% include "navbar.html" %}
+
+<div class="container mt-4">
+    <h3>Notificações</h3>
+
+    <ul class="list-group mt-3">
+        {% for notif in notifications %}
+        <li class="list-group-item">
+            {{ notif.message }} <br>
+            <small class="text-muted">{{ notif.created_at }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

@@ -1,30 +1,69 @@
 {% extends "homepage.html" %}
 
 {% block title %}
-    Perfil - {{ username }}
+    Perfil - {{ user.username }}
 {% endblock %}
 
 {% block body %}
-    <body>
-        {% include "navbar.html" %}
-        <h1>Perfil do usuário: {{ user.username }}</h1>
+    {% include "navbar.html" %}
 
+    <div class="container profile-container mt-4">
+
+        <h2 class="profile-title text-center mb-2">{{ user.username }}</h2>
+
+        <div class="text-center mb-4">
+
+            {% if user != current_user %}
+                {% if current_user.is_following(user) %}
+                    <a href="{{ url_for('unfollow', user_id=user.id) }}" class="btn btn-danger btn-sm">Deixar de Seguir</a>
+                {% else %}
+                    <a href="{{ url_for('follow', user_id=user.id) }}" class="btn btn-primary btn-sm">Seguir</a>
+                {% endif %}
+            {% endif %}
+
+            <div class="mt-2 text-muted">
+                <strong>Seguidores:</strong> {{ user.followers.count() }} |
+                <strong>Seguindo:</strong> {{ user.followed.count() }}
+            </div>
+        </div>
         {% if form %}
-            <form method="POST" enctype="multipart/form-data">
+        <div class="upload-card p-3 mb-4">
+            <form method="POST" enctype="multipart/form-data" class="d-flex flex-column gap-3">
                 {{ form.csrf_token }}
 
-                {{ form.photo() }}
-                {{ form.submit() }}
+                <div>
+                    {{ form.photo(class_="form-control") }}
+                </div>
 
+                <div class="d-grid">
+                    {{ form.submit(class_="btn btn-dark") }}
+                </div>
             </form>
-
+        </div>
         {% endif %}
 
-        <a href="{{ url_for('logout') }}">Sair</a>
+
+        {% if user == current_user %}
+        <div class="text-center mb-4">
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Sair</a>
+        </div>
+        {% endif %}
 
 
-        {% for photo in user.photos %}
-            <img src="{{ url_for('static', filename='posts_photos/'~ photo.file_name)}}" alt="">
-        {% endfor %}
-    </body>
+        <div class="row g-3">
+            {% for photo in user.photos %}
+            <div class="col-4">
+                <img
+                    src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}"
+                    class="profile-photo"
+                    alt="Foto postada por {{ user.username }}">
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if user.photos|length == 0 %}
+            <p class="text-center text-muted mt-5">Nenhuma foto postada ainda.</p>
+        {% endif %}
+        </div>
+
 {% endblock %}

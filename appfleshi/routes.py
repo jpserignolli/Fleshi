@@ -1,10 +1,11 @@
-from flask import render_template, url_for, redirect
+from flask import render_template, url_for, redirect, request
 from flask_login import login_required, login_user, logout_user, current_user
 from appfleshi import app, database, bcrypt
 from appfleshi.forms import LoginForm, RegisterForm, PhotoForm
 from appfleshi.models import User, Photo
 import os
 from werkzeug.utils import secure_filename
+
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
@@ -32,7 +33,11 @@ def createaccount():
 @app.route("/profile/<user_id>", methods=['GET', 'POST'])
 @login_required
 def profile(user_id):
-    if int(user_id) == current_user.id:
+    # Garante que 'user' seja o perfil que estamos visitando
+    user = User.query.get_or_404(int(user_id))
+
+    # Se estiver visitando seu próprio perfil
+    if user.id == current_user.id:
         photo_form = PhotoForm()
         if photo_form.validate_on_submit():
             file = photo_form.photo.data
@@ -42,9 +47,13 @@ def profile(user_id):
             photo = Photo(file_name=secure_name, user_id=current_user.id)
             database.session.add(photo)
             database.session.commit()
-        return render_template('profile.html', user=current_user, form=photo_form)
+        # Passa o 'user' (que é o current_user) e o form
+        return render_template('profile.html', user=user, form=photo_form)
+
+    # Se estiver visitando o perfil de outro usuário
     else:
-        user = User.query.get(int(user_id))
+        # Apenas passa o 'user' e 'form=None' (o form de foto é só para o dono do perfil)
+        # O template agora usará os métodos `user.is_following(current_user)`
         return render_template('profile.html', user=user, form=None)
 
 
@@ -59,3 +68,48 @@ def logout():
 def feed():
     photos = Photo.query.order_by(Photo.upload_date.desc()).all()
     return render_template("feed.html", photos=photos)
+
+
+@app.route("/search", methods=["GET"])
+@login_required
+def search():
+    query = request.args.get("q", "").strip()
+
+    users = []
+    if query:
+        users = User.query.filter(User.username.ilike(f"%{query}%")).all()
+
+    return render_template("search.html", users=users, query=query)
+
+
+# --- Novas Rotas de Follow ---
+
+@app.route('/follow/<user_id>')
+@login_required
+def follow(user_id):
+    user_to_follow = User.query.get(int(user_id))
+    if user_to_follow is None:
+        # Você pode adicionar um flash message aqui para notificar o usuário
+        return redirect(url_for('feed'))
+
+    if user_to_follow == current_user:
+        # Não pode seguir a si mesmo
+        return redirect(url_for('profile', user_id=user_id))
+
+    current_user.follow(user_to_follow)
+    database.session.commit()
+    # Redireciona de volta para o perfil do usuário seguido
+    return redirect(url_for('profile', user_id=user_id))
+
+
+@app.route('/unfollow/<user_id>')
+@login_required
+def unfollow(user_id):
+    user_to_unfollow = User.query.get(int(user_id))
+    if user_to_unfollow is None:
+        return redirect(url_for('feed'))
+
+    current_user.unfollow(user_to_unfollow)
+    database.session.commit()
+    # Redireciona de volta para o perfil do usuário
+    return redirect(url_for('profile', user_id=user_id))

@@ -1,0 +1,29 @@
+{% extends "homepage.html" %}
+
+{% block title %}
+Busca - Fléshi
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+
+<div class="container mt-4">
+
+    <h3 class="mb-3">Resultados da busca por: <strong>{{ query }}</strong></h3>
+
+    {% if users|length == 0 %}
+        <p class="text-muted">Nenhum usuário encontrado.</p>
+    {% endif %}
+
+    <div class="list-group">
+        {% for user in users %}
+        <a href="{{ url_for('profile', user_id=user.id) }}" class="list-group-item list-group-item-action">
+            {{ user.username }}
+        </a>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

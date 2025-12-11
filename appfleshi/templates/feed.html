@@ -6,11 +6,26 @@
 
 {% block body %}
     {% include "navbar.html" %}
-    <h1>Feed Principal</h1>
 
-    {% for photo in photos %}
-        <a href="{{ url_for('profile', user_id=photo.user_id) }}">
-            <img src="{{ url_for('static', filename='posts_photos/'~ photo.file_name)}}" alt="">
-        </a>
-    {% endfor %}
+    <div class="container feed-container mt-4">
+
+        <h2 class="feed-title mb-4">Feed</h2>
+
+        {% for photo in photos %}
+        <div class="feed-post mb-4">
+            <a href="{{ url_for('profile', user_id=photo.user_id) }}">
+                <img
+                    src="{{ url_for('static', filename='posts_photos/' ~ photo.file_name) }}"
+                    class="feed-photo"
+                    alt="Foto postada">
+            </a>
+        </div>
+        {% endfor %}
+
+        {% if photos|length == 0 %}
+            <p class="text-center text-muted mt-5">Nenhuma foto foi postada ainda.</p>
+        {% endif %}
+
+    </div>
+
 {% endblock %}

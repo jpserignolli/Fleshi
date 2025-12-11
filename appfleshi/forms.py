@@ -1,7 +1,17 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from appfleshi.models import User
+
+ALLOWED_EMAIL_DOMAINS = [
+    "gmail.com",
+    "hotmail.com",
+    "outlook.com",
+    "yahoo.com",
+    "live.com"
+]
+
 
 class PhotoForm(FlaskForm):
     photo = FileField('Foto', validators=[DataRequired()])
@@ -28,7 +38,20 @@ class RegisterForm(FlaskForm):
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError("E-mail já cadastrado. Por favor, use outro e-mail ou faça login.")
+            raise ValidationError("E-mail já cadastrado. Use outro e-mail ou faça login.")
+
+        from email.utils import parseaddr
+        _, address = parseaddr(email.data)
+
+        if "@" not in address:
+            raise ValidationError("E-mail inválido.")
+
+        domain = address.split("@")[1].lower()
+
+        if domain not in ALLOWED_EMAIL_DOMAINS:
+            allowed = ", ".join(ALLOWED_EMAIL_DOMAINS)
+            raise ValidationError(f"Domínio de e-mail não permitido. Utilize: {allowed}")
+
         return None
 
     def validate_username(self, username):
@@ -36,3 +59,9 @@ class RegisterForm(FlaskForm):
         if user:
             raise ValidationError("Nome de usuário já cadastrado, use outro nome ou faça login.")
         return None
+
+class PhotoForm(FlaskForm):
+    photo = FileField('Foto', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Imagens apenas!')])
+    submit = SubmitField('Postar')
+
+
